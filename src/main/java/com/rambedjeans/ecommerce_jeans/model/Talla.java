@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tallas")
-public class Tallas {
+public class Talla {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // ← AUTO_INCREMENT
@@ -19,11 +19,11 @@ public class Tallas {
     private String nombreTalla;
     
     // Constructor vacío (OBLIGATORIO)
-    public Tallas() {
+    public Talla() {
     }
     
     // Constructor con parámetros (sin idTalla, porque se genera auto)
-    public Tallas(String nombreTalla) {
+    public Talla(String nombreTalla) {
         this.nombreTalla = nombreTalla;
     }
     

@@ -39,7 +39,10 @@ public class Referencia {
    @Column(nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
     
+    //**constructor vacio  */
     public Referencia() { }
+
+    //**constructor */
   
     public Referencia(String idReferencia, String nombreReferencia, String descripcion, String estiloReferencia,
             BigDecimal precioBase, Genero genero) {
@@ -62,6 +65,7 @@ public class Referencia {
     public void setGenero(Genero genero) {
         this.genero = genero;
     }
+
 
 
     public LocalDateTime getFechaCreacion() {
@@ -140,7 +144,5 @@ public class Referencia {
         this.activo = activo;
     }
 
-
-
-      
+     
 }

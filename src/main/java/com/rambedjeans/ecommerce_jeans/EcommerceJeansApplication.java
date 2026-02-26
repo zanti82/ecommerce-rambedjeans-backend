@@ -10,4 +10,17 @@ public class EcommerceJeansApplication {
 		SpringApplication.run(EcommerceJeansApplication.class, args);
 	}
 
+	/*
+	Controller habla con el mundo exterior.
+	Service piensa y decide.
+	Repository habla con la base de datos.
+	Ninguno hace el trabajo del otro.
+
+	El paciente que llega El navegador / app
+	La recepcionista Controller 
+	El médico Service
+	El archivo de historiales Repository
+	La ficha del paciente Model
+	*/
+
 }

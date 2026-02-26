@@ -13,7 +13,7 @@ public class ReferenciaService {
 
     private final ReferenciaRepository referenciaRepository;
 
-    //constructor for Dependecy injection
+    //constructor que inyecta la dependencia
     public ReferenciaService(ReferenciaRepository referenciaRepository) {
         this.referenciaRepository = referenciaRepository;
     }
