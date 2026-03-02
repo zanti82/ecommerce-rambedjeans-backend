@@ -1,10 +1,10 @@
 package com.rambedjeans.ecommerce_jeans.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-
 import com.rambedjeans.ecommerce_jeans.model.Talla;
 import com.rambedjeans.ecommerce_jeans.repository.TallaRepository;
 
@@ -24,10 +24,34 @@ public class TallaService {
         return tallaRepository.findAll();
     }
 
+    public List<Talla> getAllActive() {
+        List<Talla> todas = tallaRepository.findAll();
+        List<Talla> activas = new ArrayList<>();
+    
+        for (Talla talla : todas) {
+            if (talla.isActivo()) {
+                activas.add(talla);
+            }
+           }
+           return activas;
+        
+        }
+
      // Find by ID
     // ¿Por qué devuelve Optional? → Puede no existir, manejo seguro de null
     public Optional<Talla> findById(Integer id) {
         return tallaRepository.findById(id);
+    }
+
+    public Talla getById(Integer id){
+        
+        Optional<Talla> optional = tallaRepository.findById(id);
+
+        if(optional.isPresent()){
+            return optional.get();
+        }else{
+            return null;
+        }   
     }
 
     // Save or update
@@ -44,21 +68,33 @@ public class TallaService {
         
         return tallaRepository.save(talla);
     }
+
+    public void deactivate(Integer id) {
+        Optional<Talla> tallaOpt = tallaRepository.findById(id);  // 1. Busca en BD
+        
+        if (tallaOpt.isPresent()) {           // 2. ¿Existe?
+            Talla talla = tallaOpt.get();     // 3. Obtén el objeto
+            talla.setActivo(false);           // 4. Cambia a false
+            tallaRepository.save(talla);      // 5. Guarda en BD
+        }
+    }
+
+     // Activar
+     public void activate(Integer id) {
+        Optional<Talla> tallaOpt = tallaRepository.findById(id);
+        if (tallaOpt.isPresent()) {
+            Talla talla = tallaOpt.get();
+            talla.setActivo(true);
+            tallaRepository.save(talla);
+        }
+    }
     
-    // Delete by ID
+    // Delete by ID para dejarlo en desarollo no en produccion
     public void delete(Integer id) {
         // Nota: Esto falla si hay relaciones (ej: variantes usando esta talla)
         // Más adelante manejaremos esto con validaciones
         tallaRepository.deleteById(id);
     }
     
-    // Check if exists
-    public boolean exists(Integer id) {
-        return tallaRepository.existsById(id);
-    }
     
-    // Count total
-    public long count() {
-        return tallaRepository.count();
-    }
 }

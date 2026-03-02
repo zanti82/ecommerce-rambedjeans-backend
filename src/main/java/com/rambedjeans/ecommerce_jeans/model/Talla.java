@@ -17,14 +17,17 @@ public class Talla {
     
     @Column(unique = true, nullable = false)
     private String nombreTalla;
+
+    private boolean activo;
     
     // Constructor vacío (OBLIGATORIO)
     public Talla() {
     }
     
     // Constructor con parámetros (sin idTalla, porque se genera auto)
-    public Talla(String nombreTalla) {
+    public Talla(String nombreTalla, boolean activo) {
         this.nombreTalla = nombreTalla;
+        this.activo = true;
     }
     
     // Getters y Setters
@@ -41,6 +44,15 @@ public class Talla {
 
     public void setNombreTalla(String nombreTalla) {
         this.nombreTalla = nombreTalla;
+    }
+    
+    public boolean isActivo() {
+        return activo;
+    }
+
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
     
     @Override

@@ -21,14 +21,17 @@ public class Color {
     @Column(length = 7)  // #RRGGBB
     private String codigoHex;
     
+    private boolean activo;
+
     // Constructor vacío
     public Color() {
     }
     
     // Constructor con parámetros
-    public Color(String nombreColor, String codigoHex) {
+    public Color(String nombreColor, String codigoHex, boolean activo) {
         this.nombreColor = nombreColor;
         this.codigoHex = codigoHex;
+        this.activo = true;
     }
     
     // Constructor sin codigoHex
@@ -58,6 +61,16 @@ public class Color {
     public void setCodigoHex(String codigoHex) {
         this.codigoHex = codigoHex;
     }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+    
     
     @Override
     public String toString() {
