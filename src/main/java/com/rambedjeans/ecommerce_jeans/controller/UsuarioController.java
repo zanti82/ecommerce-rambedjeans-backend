@@ -28,7 +28,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-         // GET - List all usuarios
+    // GET  /api/usuarios- List all usuars
     @GetMapping
     public ResponseEntity<List<Usuario>> listAll() {
 
@@ -39,7 +39,7 @@ public class UsuarioController {
         ResponseEntity<List<Usuario>> respuesta =
                 new ResponseEntity<>(usuarios, HttpStatus.OK);
 
-        // 3Retornar la respuesta
+        // Retornar la respuesta
         return respuesta;
     }
 
@@ -50,10 +50,10 @@ public class UsuarioController {
         } */
 
 
-   // GET /api/usuarios/{id} - get ref by ID
+   // GET /api/usuarios/{id} - GET USERS by ID
 
    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable String id) {
+    public ResponseEntity<Usuario> getById(@PathVariable Integer id) {
 
         Usuario usuario = usuarioService.getById(id);
 
@@ -77,7 +77,7 @@ public class UsuarioController {
     } */
 
     
-     // POST /api/referencias - Create a new ref
+     // POST /api/usuarios - Create a new user
     @PostMapping
     public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
         Usuario newUsuario = usuarioService.save(usuario);
@@ -90,55 +90,31 @@ public class UsuarioController {
         //return ResponseEntity.status(HttpStatus.CREATED).body(newUsuario);
     }
 
-        // PUT /api/usuarios/{id} - Update ref
-        @PutMapping("/{id}")
-        public ResponseEntity<Usuario> update(@PathVariable String id,
-                                              @RequestBody Usuario usuarioNuevo) {
-        
-            // 1️⃣ Buscar el usuario existente
-            Usuario usuarioExistente = usuarioService.getById(id);
-        
-            // 2️⃣ Si no existe → 404
-            if (usuarioExistente == null) {
-                return ResponseEntity.notFound().build();
-            }
-        
-            // 3️⃣ Actualizar campos
-            usuarioExistente.setActivo(usuarioNuevo.isActivo());
-            usuarioExistente.setTipoDocumento(usuarioNuevo.getTipoDocumento());
-            // aquí actualizas los campos que quieras permitir cambiar
-        
-            // 4️⃣ Guardar cambios
-            Usuario usuarioActualizado = usuarioService.save(usuarioExistente);
-        
-            // 5️⃣ Devolver 200 OK (NO 201)
-            return new ResponseEntity<>(usuarioActualizado, HttpStatus.OK);
-        }
+    // PUT /api/usuarios/{id} - Update user
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> update(@PathVariable Integer id,
+                                            @RequestBody Usuario usuarioNuevo) {
     
+        Usuario usuarioActualizado = usuarioService.update(id,usuarioNuevo);
+    
+        // 5️⃣ Devolver 200 OK (NO 201)
+        return new ResponseEntity<>(usuarioActualizado, HttpStatus.OK);
+    }
+
         // DELETE /api/usuarios/{id} - Deactivate user  
         @DeleteMapping("/{id}")
-        public ResponseEntity<Void> desactivar(@PathVariable String id) {
-            usuarioService.deactivate(id);
-            return ResponseEntity.noContent().build();
+        public ResponseEntity<Usuario> desactivar(@PathVariable Integer id) {
+           Usuario activated = usuarioService.deactivate(id);
+    
+        return ResponseEntity.ok(activated);
 
     }
 
         //activate
         @PatchMapping("/{id}/activate")
-        public ResponseEntity<Usuario> activate(@PathVariable String id) {
-            Usuario usuario = usuarioService.getById(id);
-        
-            if (usuario == null) {
-
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-   
-            }
-        
-            usuario.setActivo(true);
-        
-        Usuario activated = usuarioService.save(usuario);
-        
-        return ResponseEntity.ok(activated);
+        public ResponseEntity<Usuario> activate(@PathVariable Integer id) {
+            Usuario deactivated = usuarioService.activate(id);
+            return ResponseEntity.ok(deactivated);
     }
 
     

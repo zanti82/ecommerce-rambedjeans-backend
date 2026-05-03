@@ -1,85 +1,137 @@
 package com.rambedjeans.ecommerce_jeans.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
+import com.rambedjeans.ecommerce_jeans.dto.VarianteDTO;
+import com.rambedjeans.ecommerce_jeans.model.Color;
+import com.rambedjeans.ecommerce_jeans.model.Referencia;
+import com.rambedjeans.ecommerce_jeans.model.Talla;
 import com.rambedjeans.ecommerce_jeans.model.Variante;
 import com.rambedjeans.ecommerce_jeans.repository.VarianteRepository;
 
+@Service
 public class VarianteService {
 
     private final VarianteRepository varianteRepository;
+    private final ReferenciaService referenciaService;
+    private final ColorService colorService;
+    private final TallaService tallaService;
 
-    public VarianteService(VarianteRepository varianteRepository) {
+    //inyeccion de repo y servicios
+    public VarianteService(
+        VarianteRepository varianteRepository,
+        ReferenciaService referenciaService,
+        ColorService colorService,
+        TallaService tallaService
+    ) {
         this.varianteRepository = varianteRepository;
+        this.referenciaService = referenciaService;
+        this.colorService = colorService;
+        this.tallaService = tallaService;
     }
 
-    // get all
-    public List<Variante> getAll(){
-        return varianteRepository.findAll();
-    }
+    public Variante crearVariante(VarianteDTO dto) {
 
-    //GET only active color
+        // 🔹 traer entidades (igual que Gasto)
+        Referencia referencia = referenciaService.getbyId(dto.getReferenciaId());
+        Color color = colorService.getById(dto.getColorId());
+        Talla talla = tallaService.getById(dto.getTallaId());
 
-    public List<Variante> getAllActive() {
-        List<Variante> todas = varianteRepository.findAll();
-        List<Variante> activas = new ArrayList<>();
-    
-        for (Variante variante : todas) {
-            if (variante.isActivo()) {
-                activas.add(variante);
-            }
-           }
-           return activas;
-        
-        }
+        // 🔹 generar SKU (ejemplo básico)
+        String sku = referencia.getIdReferencia() + "-" 
+                   + color.getIdColor() + "-" 
+                   + talla.getIdTalla();
 
-    
-    public Variante getById(Integer id){
-        
-        Optional<Variante> optional = varianteRepository.findById(id);
+        // 🔹 crear objeto limpio
+        Variante variante = new Variante(
+            referencia,
+            color,
+            talla,
+            dto.getStock(),
+            sku,
+            true
+        );
 
-        if(optional.isPresent()){
-            return optional.get();
-        }else{
-            return null;
-        }   
-    }
-
-    // this hibernate choose from update or save
-
-    public Variante save(Variante variante){
         return varianteRepository.save(variante);
     }
 
-    public void deactivate(Integer id) {
-        Optional<Variante> varianteOpt = varianteRepository.findById(id);  // 1. Busca en BD
-        
-        if (varianteOpt.isPresent()) {           // 2. ¿Existe?
-            Variante variante = varianteOpt.get();     // 3. Obtén el objeto
-            variante.setActivo(false);           // 4. Cambia a false
-            varianteRepository.save(variante);      // 5. Guarda en BD
-        }
+    public List<Variante> getAll() {
+        return varianteRepository.findAll();
     }
 
-     // Activar
-     public void activate(Integer id) {
-        Optional<Variante> varianteOpt = varianteRepository.findById(id);
-        if (varianteOpt.isPresent()) {
-            Variante variante = varianteOpt.get();
-            variante.setActivo(true);
-            varianteRepository.save(variante);
-        }
+    public List<Variante> getAllActive() {
+        return varianteRepository.findAll()
+                .stream()
+                .filter(Variante::getActivo)
+                .toList();
     }
+
+    public Variante getById(Integer id) {
+        return varianteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    }
+
+    public Variante updateStock(Integer id, Integer stock) {
+
+        if (stock == null || stock < 0) {
+            throw new RuntimeException("Stock inválido");
+        }
     
-    // Delete by ID para dejarlo en desarollo no en produccion
+        Variante variante = varianteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        variante.setStock(stock);
+    
+        return varianteRepository.save(variante);
+    }
+
+    public Variante update(Integer id, VarianteDTO dto) {
+
+        Variante variante = varianteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        Referencia referencia = referenciaService.getbyId(dto.getReferenciaId());
+        Color color = colorService.getById(dto.getColorId());
+        Talla talla = tallaService.getById(dto.getTallaId());
+    
+        variante.setReferencia(referencia);
+        variante.setColor(color);
+        variante.setTalla(talla);
+        variante.setStock(dto.getStock());
+    
+        return varianteRepository.save(variante);
+    }
+
+    public Variante deactivate(Integer id) {
+
+        Variante variante = varianteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        variante.setActivo(false);
+    
+        return varianteRepository.save(variante);
+    }
+
+    public Variante activate(Integer id) {
+
+        Variante variante = varianteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        variante.setActivo(true);
+    
+        return varianteRepository.save(variante);
+    }
+
     public void delete(Integer id) {
-        // Nota: Esto falla si hay relaciones (ej: variantes usando esta talla)
-        // Más adelante manejaremos esto con validaciones
+
+        if (!varianteRepository.existsById(id)) {
+            throw new RuntimeException("Variante no encontrada");
+        }
+    
         varianteRepository.deleteById(id);
     }
-
 
     
 }

@@ -18,14 +18,14 @@ public class Talla {
     @Column(unique = true, nullable = false)
     private String nombreTalla;
 
-    private boolean activo;
+    private Boolean activo;
     
     // Constructor vacío (OBLIGATORIO)
     public Talla() {
     }
     
     // Constructor con parámetros (sin idTalla, porque se genera auto)
-    public Talla(String nombreTalla, boolean activo) {
+    public Talla(String nombreTalla, Boolean activo) {
         this.nombreTalla = nombreTalla;
         this.activo = true;
     }
@@ -51,7 +51,7 @@ public class Talla {
     }
 
 
-    public void setActivo(boolean activo) {
+    public void setActivo(Boolean activo) {
         this.activo = activo;
     }
     

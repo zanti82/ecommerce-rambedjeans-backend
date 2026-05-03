@@ -5,71 +5,95 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "variantes")
 public class Variante {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+  
     private Integer idVariante;
-    
-    @Column(name = "idReferencia", nullable = false)
-    private String idReferencia;
-    
-    @Column(name = "idTalla", nullable = false)
-    private Integer idTalla;
-    
-    @Column(name = "idColor", nullable = false)
-    private Integer idColor;
-    
-    @Column(unique = true, length = 100)
-    private String sku;
-    
+
+    // 🔹 RELACIONES
+
+    @ManyToOne
+    @JoinColumn(name = "idReferencia", nullable = false)
+    private Referencia referencia;
+
+    @ManyToOne
+    @JoinColumn(name = "idColor", nullable = false)
+    private Color color;
+
+    @ManyToOne
+    @JoinColumn(name = "idTalla", nullable = false)
+    private Talla talla;
+
+    // 🔹 CAMPOS
+
     @Column(nullable = false)
-    private Boolean activo = true;
+    private Integer stock;
 
-    public Variante() {
-    }
+    @Column(unique = true)
+    private String sku;
 
-    public Variante(Integer idVariante, String idReferencia, Integer idTalla, Integer idColor, String sku,
-            Boolean activo) {
-        this.idVariante = idVariante;
-        this.idReferencia = idReferencia;
-        this.idTalla = idTalla;
-        this.idColor = idColor;
+    @Column(nullable = false)
+    private Boolean activo;
+
+    // 🔹 Constructor vacío (obligatorio)
+    public Variante() {}
+
+    // 🔥 Constructor limpio (como Gasto)
+    public Variante(Referencia referencia, Color color, Talla talla, Integer stock, String sku, Boolean activo) {
+        this.referencia = referencia;
+        this.color = color;
+        this.talla = talla;
+        this.stock = stock;
         this.sku = sku;
-        this.activo = true;
+        this.activo = activo;
     }
 
-    public Integer getIdVariante() {
+    public Integer getId() {
         return idVariante;
     }
 
-    public void setIdVariante(Integer idVariante) {
-        this.idVariante = idVariante;
+    public void setId(Integer id) {
+        this.idVariante = id;
     }
 
-    public String getIdReferencia() {
-        return idReferencia;
+    public Referencia getReferencia() {
+        return referencia;
     }
 
-    public void setIdReferencia(String idReferencia) {
-        this.idReferencia = idReferencia;
+    public void setReferencia(Referencia referencia) {
+        this.referencia = referencia;
     }
 
-    public Integer getIdTalla() {
-        return idTalla;
+    public Color getColor() {
+        return color;
     }
 
-    public void setIdTalla(Integer idTalla) {
-        this.idTalla = idTalla;
+    public void setColor(Color color) {
+        this.color = color;
     }
 
-    public Integer getIdColor() {
-        return idColor;
+    public Talla getTalla() {
+        return talla;
     }
 
-    public void setIdColor(Integer idColor) {
-        this.idColor = idColor;
+    public void setTalla(Talla talla) {
+        this.talla = talla;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
     public String getSku() {
@@ -80,7 +104,7 @@ public class Variante {
         this.sku = sku;
     }
 
-    public Boolean isActivo() {
+    public Boolean getActivo() {
         return activo;
     }
 
@@ -88,7 +112,7 @@ public class Variante {
         this.activo = activo;
     }
 
-    
-    
+    // getters y setters
+
     
 }

@@ -1,52 +1,57 @@
 package com.rambedjeans.ecommerce_jeans.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
+import com.rambedjeans.ecommerce_jeans.model.Role;
 import com.rambedjeans.ecommerce_jeans.model.Usuario;
 import com.rambedjeans.ecommerce_jeans.repository.UsuarioRepositorio;
 
 @Service
 public class UsuarioService {
 
-    public final UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioRepositorio usuarioRepositorio;
+    private  final PasswordEncoder passwordEncoder;
 
     //constructo que inyecta la dependencia
 
-    public UsuarioService(UsuarioRepositorio usuarioRepositorio) {
+    public UsuarioService(UsuarioRepositorio usuarioRepositorio, PasswordEncoder passwordEncoder) {
         this.usuarioRepositorio = usuarioRepositorio;
+        this.passwordEncoder = passwordEncoder;
     }
 
-     public List<Usuario> getAll(){
+    //USERS LIST
+
+    public List<Usuario> getAll(){
         return usuarioRepositorio.findAll();
     }
 
-      public List<Usuario> getAllActive() {
-       
-        /* return usuarioRepositorio.findAll().stream()
-                .filter(Usuario::isActivo).toList(); */
-        
-        List<Usuario> todos = usuarioRepositorio.findAll();
-        List<Usuario> activos = new ArrayList<>();
+    //USERS ACTIVE LIST
 
-        for(Usuario user : todos ){
-            if(user.isActivo()){
-                activos.add(user);
-            }
+    public List<Usuario> getAllActive() {
+    
+    /* return usuarioRepositorio.findAll().stream()
+            .filter(Usuario::isActivo).toList(); */
+    
+    List<Usuario> todos = usuarioRepositorio.findAll();
+    List<Usuario> activos = new ArrayList<>();
+
+    for(Usuario user : todos ){
+        if(user.getActivo()){
+            activos.add(user);
         }
-        
-        return activos;
-    
-    
+    }
+    return activos;
     }
 
-    // Search by ID
+    // GET USER BY ID
 
-    public Usuario getById(String id) {
+    public Usuario getById(Integer id) {
         Optional<Usuario> optional = usuarioRepositorio.findById(id);
 
         if (optional.isPresent()) {
@@ -60,24 +65,58 @@ public class UsuarioService {
         return usuarioRepositorio.findById(id);
     } */
 
+    //CREATE USER
+
     public Usuario save(Usuario usuario){
+
+        //enciptamos el password 
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+
+        usuario.setPassword(passwordEncriptada);
+        usuario.setFechaCreacion(LocalDateTime.now());
+        usuario.setRol(Role.USER);
+        usuario.setActivo(true);
+        usuario.setUltimoAcceso(LocalDateTime.now());
+
+        //cremos el user
         return usuarioRepositorio.save(usuario);
     }
 
-     // Deactivate (eliminación lógica)
+    //UPDATE USER
 
-     public void deactivate(String id){
+    public Usuario update(Integer id, Usuario usuarioNuevo) {
 
-        Optional<Usuario> optionalUsuario = usuarioRepositorio.findById(id);
+        //Miramos si existe
+        Usuario usuarioExistente = usuarioRepositorio.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     
-        if (optionalUsuario.isPresent()) {
+
+     
+        // 🔥 AQUÍ va la lógica
+
+        System.out.println(usuarioExistente);
+        usuarioExistente.setActivo(usuarioNuevo.getActivo());
+       // no va es unique usuarioExistente.setTipoDocumento(usuarioNuevo.getTipoDocumento());
+        usuarioExistente.setNombre(usuarioNuevo.getNombre());
+        usuarioExistente.setCorreo(usuarioNuevo.getCorreo());
+        usuarioExistente.setTelefono(usuarioNuevo.getTelefono());
+        usuarioExistente.setDireccion(usuarioNuevo.getDireccion());
+        usuarioExistente.setIdentificacion (usuarioNuevo.getIdentificacion());
+        usuarioExistente.setPassword(usuarioNuevo.getPassword());
+
+        return usuarioRepositorio.save(usuarioExistente);
+    }
+
+     // USER DEACTIVATE (eliminación lógica)
+
+     public Usuario deactivate(Integer id){
+        
+        Usuario usuarioActivo = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
     
-            Usuario usuario = optionalUsuario.get();
+        usuarioActivo.setActivo(false);
     
-            usuario.setActivo(false);
-    
-            usuarioRepositorio.save(usuario);
-        }
+        return usuarioRepositorio.save(usuarioActivo);
     }
 
     /*  public void deactivate(String id){
@@ -89,7 +128,18 @@ public class UsuarioService {
         });
     } */
 
-    public void delete(String id) {
+    public Usuario activate(Integer id) {
+
+        Usuario usuarioInactivo = usuarioRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        usuarioInactivo.setActivo(true);
+    
+        return usuarioRepositorio.save(usuarioInactivo);
+    }    
+
+    //USER DELETE ONLY IN DEVELOP
+    public void delete(Integer id) {
         usuarioRepositorio.deleteById(id);
     }
 
@@ -99,18 +149,13 @@ public class UsuarioService {
         int contador = 0;
 
         for(Usuario user : todos ){
-            if(user.isActivo()){
+            if(user.getActivo()){
                 contador++;
             }
         }
-
         return contador;
-
-
        /*  return usuarioRepositorio.findAll().stream()
-                .filter(Usuario::isActivo).count();*/
-                
+                .filter(Usuario::isActivo).count();*/          
     } 
-    
-    
+     
 }

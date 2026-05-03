@@ -1,7 +1,7 @@
 package com.rambedjeans.ecommerce_jeans.controller;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.rambedjeans.ecommerce_jeans.model.Referencia;
 import com.rambedjeans.ecommerce_jeans.service.ReferenciaService;
 
@@ -38,10 +37,16 @@ public class ReferenciaController {
       // GET /api/referencias/{id} - get ref by ID
     @GetMapping("/{id}")
     public ResponseEntity<Referencia> getById(@PathVariable String id) {
-        Optional<Referencia> referencia = referenciaService.getbyId(id);
-        return referencia
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Referencia referencia = referenciaService.getbyId(id);
+
+    if (referencia != null) {
+
+             return new ResponseEntity<>(referencia, HttpStatus.OK);
+
+    } else {
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     }
 
      // POST /api/referencias - Create a new ref
@@ -53,37 +58,55 @@ public class ReferenciaController {
 
         // PUT /api/referencias/{id} - Update ref
     @PutMapping("/{id}")
-    public ResponseEntity<Referencia> update(@PathVariable String id,@RequestBody Referencia referencia) {
+    public ResponseEntity<Referencia> update(@PathVariable String id,@RequestBody Referencia referenciaNew) {
         
-        if (!referenciaService.getbyId(id).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        referencia.setIdReferencia(id);
-        Referencia refUpdate = referenciaService.save(referencia);
-        return ResponseEntity.ok(refUpdate);
+        Referencia referencia = referenciaService.getbyId(id);
+
+        if (referencia == null) {
+            
+            return ResponseEntity.badRequest().build();
+               
+        }      
+        referencia.setNombreReferencia(referenciaNew.getNombreReferencia());
+        referencia.setDescripcion(referenciaNew.getDescripcion());
+        referencia.setGenero(referenciaNew.getGenero());
+        referencia.setPrecioBase(referenciaNew.getPrecioBase());
+        referencia.setEstiloReferencia(referenciaNew.getEstiloReferencia());
+        referencia.setActivo(true);
+
+        Referencia referenciaUpdate = referenciaService.save(referencia);
+    
+        // 5️⃣ Devolver 200 OK (NO 201)
+        return new ResponseEntity<>(referenciaUpdate, HttpStatus.OK);
+
     }
     
     // DELETE /api/referencias/{id} - Deactivate ref
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desactivar(@PathVariable String id) {
-        referenciaService.deactivate(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable String id) {
 
-   }
+        Referencia ref = referenciaService.deactivate(id);
+    
+        return ResponseEntity.ok(
+            Map.of(
+                "mensaje", "Referencia desactivada correctamente",
+                "data", ref
+            )
+        );
+    }
 
     //activate
    @PatchMapping("/{id}/activate")
 public ResponseEntity<Referencia> activate(@PathVariable String id) {
-    Optional<Referencia> referenciaOpt = referenciaService.getbyId(id);
+    Referencia referenciaOpt = referenciaService.getbyId(id);
     
-    if (!referenciaOpt.isPresent()) {
-        return ResponseEntity.notFound().build();
+    if (referenciaOpt == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
-    Referencia referencia = referenciaOpt.get();
-    referencia.setActivo(true);
-    Referencia activated = referenciaService.save(referencia);
+   
+    referenciaOpt.setActivo(true);
+    Referencia activated = referenciaService.save(referenciaOpt);
     
     return ResponseEntity.ok(activated);
 }

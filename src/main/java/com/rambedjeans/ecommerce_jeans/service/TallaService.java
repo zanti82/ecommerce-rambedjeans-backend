@@ -39,9 +39,9 @@ public class TallaService {
 
      // Find by ID
     // ¿Por qué devuelve Optional? → Puede no existir, manejo seguro de null
-    public Optional<Talla> findById(Integer id) {
+    /*public Optional<Talla> findById(Integer id) {
         return tallaRepository.findById(id);
-    }
+    }*/
 
     public Talla getById(Integer id){
         
@@ -59,8 +59,7 @@ public class TallaService {
     // → Si idTalla es null → INSERT
     // → Si idTalla tiene valor → UPDATE
     public Talla save(Talla talla) {
-        // Aquí podrías agregar validaciones de negocio
-        // Ejemplo: validar que nombreTalla no esté vacío
+      
         
         if (talla.getNombreTalla() == null || talla.getNombreTalla().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la talla no puede estar vacío");
@@ -80,13 +79,13 @@ public class TallaService {
     }
 
      // Activar
-     public void activate(Integer id) {
-        Optional<Talla> tallaOpt = tallaRepository.findById(id);
-        if (tallaOpt.isPresent()) {
-            Talla talla = tallaOpt.get();
-            talla.setActivo(true);
-            tallaRepository.save(talla);
-        }
+     public Talla activate(Integer id) {
+         Talla talla = tallaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+    
+        talla.setActivo(true);
+    
+        return tallaRepository.save(talla);
     }
     
     // Delete by ID para dejarlo en desarollo no en produccion

@@ -1,7 +1,6 @@
 package com.rambedjeans.ecommerce_jeans.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -75,21 +74,21 @@ public class TallaController {
     @PutMapping("/{id}")
     public ResponseEntity<Talla> update(@PathVariable Integer id,@RequestBody Talla newTalla) {
 
-        System.out.println("ID recibido: " + id);
-        System.out.println("Nombre: " + newTalla.getNombreTalla());
+        //System.out.println("ID recibido: " + id);
+        //System.out.println("Nombre: " + newTalla.getNombreTalla());
         
-        Optional<Talla> optionalTalla = tallaService.findById(id);
+            Talla talla = tallaService.getById(id);
 
-        if (optionalTalla.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (talla == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     
-        Talla tallaExistente = optionalTalla.get();
-    
+          
         // actualizar campos permitidos
-        tallaExistente.setNombreTalla(newTalla.getNombreTalla());
+        talla.setNombreTalla(newTalla.getNombreTalla());
+        talla.setActivo(true);
     
-        Talla tallaUpdate = tallaService.save(tallaExistente);
+        Talla tallaUpdate = tallaService.save(talla);
     
         return ResponseEntity.ok(tallaUpdate);
     }
@@ -105,15 +104,8 @@ public class TallaController {
     //activate
    @PatchMapping("/{id}/activate")
     public ResponseEntity<Talla> activate(@PathVariable Integer id) {
-        Optional<Talla> tallaOPt = tallaService.findById(id); // recibe un optional
-        
-        if (!tallaOPt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        Talla talla = tallaOPt.get();
-        talla.setActivo(true);
-        Talla activated = tallaService.save(talla);
+       
+        Talla activated = tallaService.activate(id);
         
         return ResponseEntity.ok(activated);
     }

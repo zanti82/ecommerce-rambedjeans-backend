@@ -2,6 +2,8 @@ package com.rambedjeans.ecommerce_jeans.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,9 +36,10 @@ public class Referencia {
     @Column(nullable = false)
     private Genero genero; 
 
-    private boolean activo;
+    private Boolean activo;
 
-   @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
+    @CreationTimestamp 
     private LocalDateTime fechaCreacion;
     
     //**constructor vacio  */
@@ -45,7 +48,7 @@ public class Referencia {
     //**constructor */
   
     public Referencia(String idReferencia, String nombreReferencia, String descripcion, String estiloReferencia,
-            BigDecimal precioBase, Genero genero) {
+            BigDecimal precioBase, Genero genero, Boolean activo) {
         this.idReferencia = idReferencia;
         this.nombreReferencia = nombreReferencia;
         this.descripcion = descripcion;
@@ -53,7 +56,7 @@ public class Referencia {
         this.precioBase = precioBase;
         this.genero = genero;
         this.activo = true;
-        this.fechaCreacion = LocalDateTime.now();
+        
     }
 
 
@@ -135,12 +138,12 @@ public class Referencia {
 
 
 
-    public boolean isActivo() {
+    public Boolean isActivo() {
         return activo;
     }
 
 
-    public void setActivo(boolean activo) {
+    public void setActivo(Boolean activo) {
         this.activo = activo;
     }
 

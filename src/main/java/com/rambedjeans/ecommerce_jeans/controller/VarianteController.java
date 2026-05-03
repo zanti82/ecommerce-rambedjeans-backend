@@ -1,6 +1,7 @@
 package com.rambedjeans.ecommerce_jeans.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rambedjeans.ecommerce_jeans.dto.VarianteDTO;
 import com.rambedjeans.ecommerce_jeans.model.Variante;
 import com.rambedjeans.ecommerce_jeans.service.VarianteService;
 
@@ -62,9 +64,9 @@ public class VarianteController {
 
      // POST /api/variante - Create a new variante
     @PostMapping
-    public ResponseEntity<Variante> create(@RequestBody Variante variante) {
+    public ResponseEntity<Variante> create(@RequestBody VarianteDTO dto) {
 
-        Variante newVariante = varianteService.save(variante);
+        Variante newVariante = varianteService.crearVariante(dto);
 
         ResponseEntity<Variante> respuesta =
         new ResponseEntity<>(newVariante, HttpStatus.CREATED);
@@ -76,57 +78,39 @@ public class VarianteController {
     
      // PUT /api/variantes/{id} - Update variante
     @PutMapping("/{id}")
-    public ResponseEntity<Variante> update(@PathVariable Integer id,
-                                        @RequestBody Variante variante) {
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                        @RequestBody VarianteDTO dto) {
     
-        // 1️⃣ Buscar el usuario existente
-        Variante varianteExistente = varianteService.getById(id);
+        try {
+            Variante variante = varianteService.update(id, dto);
 
-        
-    
-        // 2️⃣ Si no existe → 404
-        if (varianteExistente == null) {
-            return ResponseEntity.badRequest().build();
-        }
-    
-        // 3️⃣ Actualizar campos
-        varianteExistente.setIdReferencia(variante.getIdReferencia());
-        varianteExistente.setIdTalla(variante.getIdTalla());
-        varianteExistente.setIdColor(variante.getIdColor());
-        varianteExistente.setSku(variante.getSku());
-        varianteExistente.setActivo(variante.isActivo());
-             
-        // aquí actualizas los campos que quieras permitir cambiar
-    
-        // 4️⃣ Guardar cambios
-        Variante varianteUpdate = varianteService.save(varianteExistente);
-    
-        // 5️⃣ Devolver 200 OK (NO 201)
-        return new ResponseEntity<Variante>(varianteUpdate, HttpStatus.OK);
+            return ResponseEntity.ok(
+                Map.of(
+                    "mensaje", "Variante actualizada",
+                    "data", variante
+                )
+            );
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                Map.of("error", e.getMessage())
+            );}
     }
 
      // DELETE /api/variantes/{id} - Deactivate variante  
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desactivar(@PathVariable Integer id) {
-        varianteService.deactivate(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Variante> desactivar(@PathVariable Integer id) {
+        Variante activated = varianteService.deactivate(id);
+    
+        return ResponseEntity.ok(activated);
 
     }
 
     //activate
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Variante> activate(@PathVariable Integer id) {
-        Variante variante = varianteService.getById(id);
-    
-        if (variante == null) {
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        }
-    
-        variante.setActivo(true);
-    
-    Variante activated = varianteService.save(variante);
+           
+        Variante activated = varianteService.activate(id);
     
     return ResponseEntity.ok(activated);
     }

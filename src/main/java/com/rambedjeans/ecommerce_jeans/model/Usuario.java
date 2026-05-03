@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -14,47 +16,80 @@ import jakarta.persistence.Table;
 public class Usuario {
 
     @Id
-    @Column(name = "identificacion", length = 50)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(unique = true, nullable = false, length = 50)
     private String identificacion;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "tipo_documento", nullable = false, length = 20)
     private TipoDocumento tipoDocumento;
 
-    @Column(name = "correo", length = 100)  
+    @Column(nullable = false, length = 100)
+    private String nombre;
+
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(length = 100)
+    private String direccion;
+
+    @Column(unique = true, nullable = false, length = 100)
     private String correo;
 
-    @Column(name = "password", length = 50)  
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private Role rol;
 
+    @Column(nullable = false)
+    private Boolean activo;
 
-    private boolean activo;
-
-    @Column(nullable = false, updatable = false)
+    @Column(name = "fecha_creacion")
+   
     private LocalDateTime fechaCreacion;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "ultimo_acceso")
+   
     private LocalDateTime ultimoAcceso;
 
-    //constructo vacio
+    // 🔹 Constructor vacío (obligatorio)
     public Usuario() {
+        
     }
 
-    //constructor con todo
+    // 🔹 Constructor principal
+    public Usuario(String identificacion,
+                   TipoDocumento tipoDocumento,
+                   String nombre,
+                   String telefono,
+                   String direccion,
+                   String correo,
+                   String password,
+                   Role rol) {
 
-    public Usuario(String identificacion, TipoDocumento tipoDocumento, String correo, String password, Role rol) {
         this.identificacion = identificacion;
         this.tipoDocumento = tipoDocumento;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.direccion = direccion;
         this.correo = correo;
         this.password = password;
         this.rol = rol;
         this.activo = true;
         this.fechaCreacion = LocalDateTime.now();
         this.ultimoAcceso = LocalDateTime.now();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getIdentificacion() {
@@ -71,6 +106,30 @@ public class Usuario {
 
     public void setTipoDocumento(TipoDocumento tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public String getCorreo() {
@@ -97,11 +156,11 @@ public class Usuario {
         this.rol = rol;
     }
 
-    public boolean isActivo() {
+    public Boolean getActivo() {
         return activo;
     }
 
-    public void setActivo(boolean activo) {
+    public void setActivo(Boolean activo) {
         this.activo = activo;
     }
 
@@ -121,11 +180,5 @@ public class Usuario {
         this.ultimoAcceso = ultimoAcceso;
     }
 
-    
-
-    
-
-
-
-    
+        
 }

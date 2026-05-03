@@ -86,8 +86,7 @@ public class ColorController {
         // 1️⃣ Buscar el usuario existente
         Color colorExistente = colorService.getById(id);
 
-        
-    
+            
         // 2️⃣ Si no existe → 404
         if (colorExistente == null) {
             return ResponseEntity.badRequest().build();

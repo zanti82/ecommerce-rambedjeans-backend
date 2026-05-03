@@ -42,3 +42,50 @@ En desarrollo activo (Fase 1/5)
 ## 👤 Autor
 
 Tu Nombre - [LinkedIn](https://www.linkedin.com/in/santiago-a-ramirez-h/) - [Email](zanti82@gmail.com)
+
+## Ejemplo para postam
+
+POST REFERENCIAS
+ {
+
+ "idReferencia": "4999",
+  "nombreReferencia": "Jean Recto Fit Clasico",
+  "descripcion": "Jean de corte Recto para hombre",
+  "estiloReferencia": "Recto",
+  "precioBase": 99000,
+  "genero": "HOMBRE",
+  "activo": true
+
+ }
+ POST COLORES
+ {  
+        "activo": true,
+        "codigoHex": "6B7C3A",
+        "nombreColor": "Azul dirty amarillo"
+  
+}
+
+POST TALLAS
+{
+ 
+   "nombreTalla": "32",
+  "activo": true
+ 
+}
+
+POST USUARIOS
+
+{
+  
+  "identificacion": "1001234567",
+  "tipoDocumento": "CC",
+  "nombre": "Juan Perez",
+  "telefono": "3001234567",
+  "direccion": "Calle 123 #45-67",
+  "correo": "perez@mail.com",
+  "password": "123456",
+  "rol": "USER",
+  "activo": true
+}
+
+
